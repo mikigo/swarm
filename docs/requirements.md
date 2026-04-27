@@ -281,6 +281,17 @@ swarm task info <task_id>
 swarm task cancel <task_id>
 ```
 
+##### 任务列表获取
+
+任务列表通过服务端 API 获取：
+```bash
+GET /api/tasks
+GET /api/tasks?status=running
+```
+
+- 不传 status 参数：返回全部任务
+- 传 status 参数：返回指定状态的任务（如 `--status running`）
+
 ##### 任务列表显示
 
 任务列表使用 rich 库以表格形式展示：

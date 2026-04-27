@@ -520,6 +520,17 @@ swarm task list --width name=30,repo_url=50
 swarm task list --color passed=green,failed=red
 ```
 
+#### 5.3.5 配置优先级
+
+配置文件优先级：**项目级 > 用户级**
+
+| 位置 | 说明 |
+|------|------|
+| `./swarm.config.yaml` | 项目级配置 |
+| `~/.swarm/config.yaml` | 用户级配置 |
+
+项目级配置覆盖用户级配置。
+
 ### 5.4 文件存储策略
 
 - **JSON 文件**：任务信息、结果数据，使用 JSON 格式存储
