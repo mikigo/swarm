@@ -575,6 +575,7 @@ swarm task cancel <task_id>
 |------|----------|
 | Web 框架 | FastAPI |
 | WebSocket | FastAPI (原生支持) |
+| API 文档 | fastapi-self-hosting-docs (自托管) |
 | 日志 | loguru |
 | HTTP 客户端 | httpx |
 | 虚拟环境 | uv / pipenv / venv |

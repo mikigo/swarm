@@ -592,6 +592,7 @@ Task Queue: [Task-A, Task-B, Task-C]
 | loguru | * | 日志 |
 | pydantic | * | 数据验证 |
 | all/allure-pytest | * | Allure 支持 |
+| fastapi-self-hosting-docs | * | API 文档自托管 |
 
 ### 11.2 客户端依赖
 
