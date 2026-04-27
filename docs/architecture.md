@@ -376,10 +376,9 @@ class LocalQueue:
 ```
 data/
 ├── tasks/
-│   └── {task_id}/
-│       ├── meta.json           # 任务元信息
-│       ├── test_files.json     # 待执行文件列表
-│       └── results.json        # 执行结果
+│   ├── {task_id}.json      # 每个任务一个 JSON 文件
+│   ├── {task_id}.json
+│   └── {task_id}.json
 │
 ├── allure/
 │   └── {task_id}/
@@ -400,7 +399,7 @@ data/
         └── ...
 ```
 
-### 5.2 任务元信息 (meta.json)
+### 5.2 任务文件 ({task_id}.json)
 
 ```json
 {
@@ -410,6 +409,8 @@ data/
   "created_at": "2024-01-01T00:00:00Z",
   "started_at": "2024-01-01T00:01:00Z",
   "finished_at": null,
+  "repo_url": "https://github.com/xxx/tests.git",
+  "branch": "main",
   "test_paths": ["tests/api/"],
   "filter_args": {
     "k": "api",
@@ -419,14 +420,107 @@ data/
     "timeout": 60,
     "reruns": 2
   },
-  "branch": "main",
+  "test_files": ["tests/api/test_user.py", "tests/api/test_order.py"],
   "total_files": 100,
   "completed_files": 50,
-  "failed_files": 2
+  "failed_files": 2,
+  "ip": "192.168.1.100",
+  "results": [
+    {
+      "file": "tests/api/test_user.py",
+      "status": "passed",
+      "duration": 1.23,
+      "passed": 10,
+      "failed": 1,
+      "error": 0,
+      "skipped": 0
+    }
+  ],
+  "report_url": "/api/reports/{task_id}"
 }
 ```
 
-### 5.3 文件存储策略
+### 5.3 CLI 任务列表配置
+
+任务列表使用 rich 库展示，支持可配置的列定义和样式。
+
+#### 5.3.1 默认列定义
+
+| 列名 | 来源 | 宽度 | 说明 |
+|------|------|------|------|
+| id | task.id | 36 | 任务 UUID |
+| name | task.name | 20 | 任务名称 |
+| status | task.status | 10 | 任务状态 |
+| created_at | task.created_at | 20 | 创建时间 |
+| duration | 计算 | 10 | 执行时长 |
+| ip | task.ip | 15 | 客户端 IP |
+| passed | task.passed | 8 | 通过数 |
+| failed | task.failed | 8 | 失败数 |
+| report_url | 计算 | 30 | 报告地址 |
+
+#### 5.3.2 状态颜色
+
+| 状态 | 颜色 |
+|------|------|
+| passed | green |
+| failed | red |
+| running | yellow |
+| pending | blue |
+| completed | green |
+| cancelled | gray |
+
+#### 5.3.3 配置文件
+
+配置文件位于 `~/.swarm/config.yaml` 或项目根目录 `swarm.config.yaml`：
+
+```yaml
+task:
+  list:
+    # 显示的列及顺序
+    columns:
+      - id
+      - name
+      - status
+      - created_at
+      - duration
+      - ip
+      - passed
+      - failed
+      - report_url
+    
+    # 列宽配置
+    width:
+      id: 36
+      name: 20
+      repo_url: 40
+      report_url: 30
+    
+    # 状态颜色配置
+    color:
+      passed: green
+      failed: red
+      running: yellow
+      pending: blue
+      completed: green
+      cancelled: gray
+```
+
+#### 5.3.4 命令行覆盖
+
+命令行参数可以覆盖配置文件：
+
+```bash
+# 自定义列
+swarm task list --columns id,name,status,report_url
+
+# 自定义列宽
+swarm task list --width name=30,repo_url=50
+
+# 自定义颜色
+swarm task list --color passed=green,failed=red
+```
+
+### 5.4 文件存储策略
 
 - **JSON 文件**：任务信息、结果数据，使用 JSON 格式存储
 - **ZIP 文件**：Allure 原始结果，客户端上传的压缩包

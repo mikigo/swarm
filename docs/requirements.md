@@ -260,16 +260,88 @@ swarm run --config task_template.json
 # 使用历史任务配置重跑
 swarm run --config data/tasks/{task_id}/meta.json
 
-# 列出任务
+# 列出任务（默认表格显示）
 swarm task list
 swarm task list --status running
 
-# 查看任务
+# 自定义列显示
+swarm task list --columns id,name,status,created_at,ip,repo_url
+swarm task list --columns id,name,status,report_url
+
+# 自定义列宽
+swarm task list --width name=30,repo_url=50
+
+# 自定义颜色（status 字段着色）
+swarm task list --color passed=green,failed=red,running=yellow,pending=blue
+
+# 查看任务详情
 swarm task info <task_id>
 
 # 取消任务
 swarm task cancel <task_id>
 ```
+
+##### 任务列表显示
+
+任务列表使用 rich 库以表格形式展示：
+
+| 默认列名 | 来源 | 描述 |
+|----------|------|------|
+| `id` | task.id | 任务 UUID |
+| `name` | task.name | 任务名称 |
+| `status` | task.status | 任务状态 |
+| `created_at` | task.created_at | 创建时间 |
+| `started_at` | task.started_at | 开始时间 |
+| `finished_at` | task.finished_at | 结束时间 |
+| `duration` | 计算字段 | 执行时长 |
+| `ip` | task.ip | 客户端 IP |
+| `repo_url` | task.repo_url | 仓库地址 |
+| `branch` | task.branch | 分支 |
+| `test_files` | task.test_files | 测试文件数 |
+| `passed` | task.passed | 通过数 |
+| `failed` | task.failed | 失败数 |
+| `report_url` | 计算字段 | 报告地址 |
+
+##### 配置文件
+
+列显示可通过配置文件自定义：
+
+```yaml
+# ~/.swarm/config.yaml 或项目根目录 swarm.config.yaml
+task:
+  list:
+    columns:
+      - id
+      - name
+      - status
+      - created_at
+      - ip
+      - report_url
+    width:
+      id: 36
+      name: 20
+      repo_url: 40
+    color:
+      passed: green
+      failed: red
+      running: yellow
+      pending: blue
+      completed: green
+      cancelled: gray
+```
+
+##### 任务存储
+
+每个任务单独一个 JSON 文件，存放在服务端 data 目录：
+
+```
+data/tasks/
+├── {task_id_1}.json
+├── {task_id_2}.json
+└── {task_id_3}.json
+```
+
+任务 JSON 文件内容见 3.1 节。
 
 ### 2.5 API 接口
 
