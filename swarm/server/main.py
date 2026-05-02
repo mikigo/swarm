@@ -56,7 +56,8 @@ app = create_app()
 
 @app.get("/")
 async def root():
-    return {"message": "Swarm Server is running", "version": "0.1.0"}
+    from swarm.__version__ import __version__
+    return {"message": "Swarm Server is running", "version": __version__}
 
 
 @app.get("/health")
