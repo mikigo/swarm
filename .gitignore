@@ -1,3 +1,15 @@
+# Swarm specific
+data/
+*.log
+*.egg-info/
+dist/
+build/
+__pycache__/
+*.pyc
+.env
+config.yaml
+swarm.egg-info/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
