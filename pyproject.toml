@@ -1,10 +1,10 @@
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
-build-backend = "setuptools.backnd"
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "swarm"
-version = "0.1.0"
+dynamic = ["version"]
 description = "Distributed automated test execution framework based on FastAPI"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -51,6 +51,12 @@ swarm = "swarm.cli:main"
 
 [project.entry-points."swarm.server"]
 main = "swarm.server.main:app"
+
+[tool.setuptools]
+package-dir = {"" = "."}
+
+[tool.setuptools.dynamic]
+version = {attr = "swarm.__version__.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["."]
