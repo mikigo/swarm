@@ -179,40 +179,43 @@ task:
 
 ## 🏗️ 架构概览
 
-```
-┌─────────────────────────────────────────────────────┐
-│                    服务端 (Swarm Server)               │
-│                                                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
-│  │  FastAPI   │  │ WebSocket  │  │  Task MQ   │  │
-│  │  (HTTP)    │  │   (WS)     │  │           │  │
-│  └─────────────┘  └─────────────┘  └─────────────┘  │
-│           │              │               │             │
-│           └──────────────┼───────────────┘             │
-│                          │                           │
-│  ┌─────────────┐  ┌─────┴────────┐  ┌─────────────┐│
-│  │   Files     │  │  Collector   │  │   Allure    ││
-│  │  Storage    │  │             │  │  Reporter   ││
-│  └─────────────┘  └──────────────┘  └─────────────┘│
-└─────────────────────────────────────────────────────┘
-                          ▲
-                          │ HTTP / WebSocket
-                          │
-┌─────────────────────────────────────────────────────┐
-│                   客户端 (Swarm Client)              │
-│                                                     │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  │
-│  │    WS       │  │  Task      │  │  Runner    │  │
-│  │  Client     │  │  Receiver  │  │           │  │
-│  └─────────────┘  └─────────────┘  └─────────────┘  │
-│           │              │              │             │
-│           └──────────────┼──────────────┘             │
-│                          ▼                           │
-│  ┌────────┐  ┌────────┐  ┌────────┐  ┌────────┐  │
-│  │  Git   │→ │ VEnv   │→ │ Pytest │→ │Upload │  │
-│  │ Clone │  │ Create │  │  Run   │  │       │  │
-│  └────────┘  └────────┘  └────────┘  └────────┘  │
-└─────────────────────────────────────────────────────┘
+```mermaid
+flowchart TB
+    subgraph Server["服务端 (Swarm Server)"]
+        direction TB
+        HTTP["FastAPI<br/>(HTTP)"]
+        WS["WebSocket<br/>(WS)"]
+        MQ["Task MQ"]
+        Files["Files<br/>Storage"]
+        Collector["Collector"]
+        Allure["Allure<br/>Reporter"]
+        
+        HTTP --> MQ
+        WS --> MQ
+        MQ --> Collector
+        Collector --> Files
+        Collector --> Allure
+    end
+    
+    subgraph Client["客户端 (Swarm Client)"]
+        direction TB
+        WSClient["WS Client"]
+        Receiver["Task<br/>Receiver"]
+        Runner["Runner"]
+        Git["Git Clone"]
+        VEnv["VEnv Create"]
+        Pytest["Pytest Run"]
+        Upload["Upload"]
+        
+        WSClient --> Receiver
+        Receiver --> Runner
+        Runner --> Git
+        Git --> VEnv
+        VEnv --> Pytest
+        Pytest --> Upload
+    end
+    
+    Server <-->|HTTP / WebSocket| Client
 ```
 
 ## 📦 项目结构
